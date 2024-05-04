@@ -38,4 +38,4 @@ Welcome to my JavaScript weekend assignments repository for the front-end bootca
 ## Contact Information
 
 - For any inquiries or further information, you can reach me at [your-email@example.com](mailto:didiarmoni@gmail.com).
-- Connect with me on GitHub: [YourGitHubUsername](https://github.com/YourGitHubUsername)
+- Connect with me on GitHub: [Tante-Didi](https://github.com/YourGitHubUsername)
