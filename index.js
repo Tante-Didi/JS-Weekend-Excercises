@@ -8,12 +8,28 @@ string for false
 1.what does the function accepts? boolean
 2.what does the function returns ? a string.
 3.which string will she return? 
-*.The method function needs to return "Yes" as a string if the boolean value is true.
+*The method function needs to return "Yes" as a string if the boolean value is true.
 *it should return "No" as a string if the boolean value is false.
 */
 /*
 explore :
 1.declaring the method function
 2.checking the boolean value provided with if-else statement
-3.testing the method with console.log
+3.testing the method 
 */
+function methodBooleanToString(inputValue) {
+  if (inputValue === true) {
+    return "Yes";
+  } else {
+    return "No";
+  }
+}
+const IsMyDogReactive = true;
+const AreAllDogesReactive = false;
+
+const TestForIsMyDogReactive = methodBooleanToString(IsMyDogReactive);
+const TestForAreAllDogesReactive = methodBooleanToString(AreAllDogesReactive);
+console.log(TestForIsMyDogReactive); //Yes
+console.log(TestForAreAllDogesReactive); //No
+ 
+/*Simple Math:
