@@ -615,7 +615,7 @@ const customers = [
     cash: 1547242,
   },
 ];
-
+/*-------------------------1.1---------------------------------*/
 // Search for a car agency by its name or ID.
 // @param {string} idOrName - ID or name of the agency
 // @return {object} - agency object if found, otherwise null
@@ -626,27 +626,25 @@ const CarAgencyManager = {
     if (typeof idOrName !== "string") {
       return null;
     } else {
-      const findAgencyObj = this.agencies.find((agency) => {
+      const findAgency = this.agencies.find((agency) => {
         return agency.agencyName === idOrName || agency.agencyId === idOrName;
       });
-      return findAgencyObj || null;
+      return findAgency || null;
     }
   },
-
+  /*-------------------------1.2---------------------------------*/
   // Retrieve all agencies' names.
   // @return {string[]} - Array of agency names
   getAllAgencies() {
     return this.agencies.map((agency) => agency.agencyName);
   },
-
+  /*-------------------------1.3---------------------------------*/
   // Add a new car to an agency's inventory.
   // @param {string} agencyId - The ID of the agency
   // @param {object} car - The car object to be added
   // @return {boolean} - true if added successfully, false otherwise
   addCarToAgency(agencyId, car) {
-    const findAgency = this.agencies.find((agency) => {
-      return agency.agencyId === agencyId;
-    });
+    const findAgency = this.searchAgency(agencyId);
     if (!findAgency) {
       return false; //car was not added to the agency's inventory
     } else {
@@ -654,211 +652,224 @@ const CarAgencyManager = {
       return true; //car was added to the agency's inventory
     }
   },
-};
-const car = {
-  brand: "Ferrari",
-  models: [
-    {
-      name: "Enzo",
-      year: 2023,
-      price: 3000000,
-      carNumber: "Enzo1",
-      ownerId: "Plyq5M5AZ",
-    },
-  ],}
-
+  /*-------------------------1.4---------------------------------*/
   // Remove a car from an agency's inventory.
   // @param {string} agencyId - The ID of the agency
   // @param {string} carId - The ID of the car to be removed
   // @return {boolean} - true if removed successfully, false otherwise
-removeCarFromAgency(agencyId, carNumber);
-{
-  const agencyFind = this.agencies.findIndex(
-    (agency) => agency.agencyId === carNumber
-  );
-  if (agencyFind === -1) {
-    return false;
-  } else {
-    const carFind = this.agencies[agencyFind].cars.findIndex(
-      (car) => car.carNumber === carNumber
-    );
-    if (carFind === -1) {
+
+  removeCarFromAgency(agencyId, carNumber) {
+    const findAgency = this.searchAgency(agencyId);
+
+    if (!findAgency) {
       return false;
     }
-    this.agencies[agencyFind].cars.splice(carFind, 1);
-  }
-  return true;
-};
 
+    for (const brand of findAgency.cars) {
+      const index = brand.models.findIndex(
+        (car) => car.carNumber === carNumber
+      ); // findIndex returns the index of the first element in an array that satisfies the provided testing function. If no elements satisfy the testing function, -1 is returned.
+
+      if (index !== -1) {
+        brand.models.splice(index, 1);
+        return true;
+      }
+    }
+    return false;
+  },
+  /*-------------------------1.5---------------------------------*/
   // Change the cash or credit of an agency.
   // @param {string} agencyId - The ID of the agency
   // @param {number} cashOrCredit - The amount of cash or credit to be updated
   // @return {boolean} - true if updated successfully, false otherwise
- 
- changeAgencyCashOrCredit(agencyId1, cashOrCredit); {
-    if (typeof agencyId1 !== "string" || typeof cashOrCredit !== "number") {
-      console.log("must be string and number");
+
+  changeAgencyCashOrCredit(agencyId, cashOrCredit) {
+    if (typeof agencyId !== "string" || typeof cashOrCredit !== "number") {
+      console.log(
+        "false means agencyId is not a string or cashOrCredit is not a number"
+      );
       return false;
     }
 
-    let agency = agencies.find((agency) => agency.agencyId1 === agencyId1);
+    const findAgency = this.searchAgency(agencyId);
 
-    if (!agency) {
-      console.log("Agency not found");
-      return false;
-    }
-    agency.cash = cashOrCredit;
-    agency.credit = cashOrCredit;
-    return true;}
-  // Update the price of a specific car in an agency.
-  // @param {string} agencyId - The ID of the agency
-  // @param {string} carId - The ID of the car
-  // @param {number} newPrice - The new price of the car
-  // @return {boolean} - true if updated successfully, false otherwise
-  
-updateCarPrice(agencyId, carId, newPrice) {
-    if (typeof agencyId !== "string" && typeof carId !== "string") {
-      console.log("must be string and number");
-      return false;
+    if (findAgency) {
+      findAgency.cash += cashOrCredit;
+      return true;
     }
 
-    let agency = agencies.find((a) => a.agencyId === agencyId);
+    if (findAgency) {
+      findAgency.credit += cashOrCredit;
+      return true;
+    } else {
+      return false;
+    }
+  },
+  /*-------------------------1.6---------------------------------*/
+  //   // Update the price of a specific car in an agency.
+  //   // @param {string} agencyId - The ID of the agency
+  //   // @param {string} carId - The number of the car
+  //   // @param {number} newPrice - The new price of the car
+  //   // @return {boolean} - true if updated successfully, false otherwise
 
-    if (!agency) {
-      console.log("Agency not found");
+  updateCarPrice(agencyId, carId, newPrice) {
+    const findAgency = this.searchAgency(agencyId);
+    if (
+      typeof agencyId !== "string" &&
+      typeof carId !== "string" &&
+      typeof newPrice !== "number"
+    ) {
+      console.log(
+        "false means agencyId & carId is not a string or newPrice is not a number"
+      );
       return false;
     }
 
-    let car = agencies.find((a) => a.carNumber === carId);
+    for (const brand of findAgency.cars) {
+      const updateCarsPrice = brand.models.find(
+        (car) => car.carNumber === carId
+      );
 
-    if (!car) {
-      console.log("car not found");
-      return false;
+      if (updateCarsPrice) {
+        updateCarsPrice.price = newPrice;
+        console.log("true means price was updated");
+        return true;
+      }
     }
-    car.price = newPrice;
-    return true;
-  }
+    console.log("false means car id was not found");
+    return false;
+  },
+  /*-------------------------1.7---------------------------------*/
   // Calculate and return the total revenue for a specific agency.
   // @param {string} agencyId - The ID of the agency
   // @return {number} - The total revenue of the agency
-  getTotalAgencyRevenue(agencyId) {},  getTotalAgencyRevenue(agencyId) {
-    if (typeof agencyId !== "string") {
-      console.log("must be string ");
-      return false;
+  //(summing up the prices of all car models owned by the agency across different brands).
+  getTotalAgencyRevenue(agencyId) {
+    const findAgency = this.searchAgency(agencyId);
+    let totalRevenue = 0;
+    for (const brand of findAgency.cars) {
+      for (const car of brand.models) {
+        totalRevenue += car.price; //This is how we calculate the total revenue by selling all the cars across all brands.
+      }
     }
-
-    let agency = agencies.find((a) => a.agencyId === agencyId);
-
-    if (!agency) {
-      console.log("Agency not found");
-      return false;
-    }
-
-    const sum = agency.cash + agency.credit;
-    return sum;
+    return totalRevenue;
   },
 
-  // Transfer a car from one agency to another.
-  // @param {string} fromAgencyId - The ID of the agency from where the car will be transferred
-  // @param {string} toAgencyId - The ID of the agency to where the car will be transferred
-  // @param {string} carId - The ID of the car to be transferred
-  // @return {boolean} - true if transferred successfully, false otherwise
+  /*-------------------------1.8---------------------------------*/
+  //   // Transfer a car from one agency to another.
+  //   // @param {string} fromAgencyId - The ID of the agency from where the car will be transferred
+  //   // @param {string} toAgencyId - The ID of the agency to where the car will be transferred
+  //   // @param {string} carId - The ID of the car to be transferred
+  //   // @return {boolean} - true if transferred successfully, false otherwise
+
   transferCarBetweenAgencies(fromAgencyId, toAgencyId, carId) {
-    if (typeof fromAgencyId !== "string" || typeof toAgencyId !== "string") {
-      console.log("ids r strings");
-      return false;
+    const removeCarFromAgency = this.removeCarFromAgency(fromAgencyId, carId);
+
+    if (removeCarFromAgency) {
+      removeCarFromAgency.carNumber = toAgencyId;
+      this.addCarToAgency(toAgencyId, removeCarFromAgency);
+      return true;
     }
-    let fromAgency = agencies.find(
-      (agency) => agency.agencyId === fromAgencyId
-    );
-    let toAgency = agencies.find((agency) => agency.agencyId === toAgencyId);
-
-    if (!fromAgency || !toAgency) {
-      console.log("One or both agencies not found");
-      return false;
-    }
-
-    let carIndex = fromAgency.cars.findIndex((car) => car.carNumber === carId);
-    let car = fromAgency.cars.splice(carIndex, 1)[0];
-    toAgency.cars.push(car);
-
-    return true;
-  };
-
-
+    return false;
+  },
+};
+/*--------------------------2.1--------------------------------*/
+//   // Search for a customer by their name or ID.
+//   // @param {string} idOrName - ID or name of the customer
+//   // @return {object} - customer object if found, otherwise null
 const CustomerManager = {
-  customers,
+  customers: customers,
 
-  // Search for a customer by their name or ID.
-  // @param {string} idOrName - ID or name of the customer
-  // @return {object} - customer object if found, otherwise null
-searchCustomer(idOrName) {
-  if (typeof idOrName !== "string") {
-    console.log("must be string");
-    return null;
-  }
-  return agencies.filter},
-
-  // Retrieve all customers' names.
-  // @return {string[]} - Array of customer names
- getAllCustomers() {
-    return customers.map((customer) => customer.name);
+  searchCustomer(idOrName) {
+    if (typeof idOrName !== "string") {
+      return null;
+    } else {
+      const findCustomer = this.customers.find((customer) => {
+        return customer.name === idOrName || customer.id === idOrName;
+      });
+      return findCustomer || null;
+    }
   },
-
-  // Change the cash of a customer.
-  // @param {string} customerId - The ID of the customer
-  // @param {number} cash - The new cash value
-  // @return {boolean} - true if updated successfully, false otherwise
-  changeCustomerCash(customerId, cash) {},
-
-  // Calculate the total value of all cars owned by a specific customer.
-  // @param {string} customerId - The ID of the customer
-  // @return {number} - The total value of cars owned by the customer
-  getCustomerTotalCarValue(customerId) {},
-};
-
-const CarManager = {
-  agencies,
-
-  // Retrieve all cars available for purchase.
-  // @return {object[]} - Array of cars
-  getAllCars() {},
-
-  // Search for cars based on certain criteria.
-  // @param {number} year - The production year of the car
-  // @param {number} price - The price of the car
-  // @param {string} brand - The brand of the car
-  // @return {object[]} - Array of cars that meet the criteria
-  searchCars(year, price, brand) {},
-
-  // Return the most expensive car available for sale.
-  // @return {object} - The most expensive car
-  getMostExpensiveCar() {},
-
-  // Return the cheapest car available for sale.
-  // @return {object} - The cheapest car
-  getCheapestCar() {},
-};
-
-const CarPurchaseManager = {
-  agencies,
-  customers,
-  taxesAuthority: {
-    totalTaxesPaid: 0,
-    sumOfAllTransactions: 0,
-    numberOfTransactions: 0,
+  /*--------------------------2.2--------------------------------*/
+  //   // Retrieve all customers' names.
+  //   // @return {string[]} - Array of customer names
+  getAllCustomers() {
+    return this.customers.map((customer) => customer.name);
   },
+  /*--------------------------2.3--------------------------------*/
+  //   // Change the cash of a customer.
+  //   // @param {string} customerId - The ID of the customer
+  //   // @param {number} cash - The new cash value
+  //   // @return {boolean} - true if updated successfully, false otherwise
+  //   changeCustomerCash(customerId, cash) {},
+  changeCustomerCash(customerId, cash) {
+    if (typeof customerId !== "string" || typeof cash !== "number") {
+      console.log(
+        "false means agencyId is not a string or cashOrCredit is not a number"
+      );
+      return false;
+    }
 
-  // Implement a sellCar function that sells a car to a specific customer.
-  // @param {string} carId - The ID of the car
-  // @param {string} customerId - The ID of the customer
-  // @return {boolean} - true if the car was sold successfully, false otherwise
-  sellCar(carId, customerId) {},
+    const findCustomer = this.searchCustomer(customerId);
 
-  // Calculate and return the total revenue of the entire market.
-  // @return {number} - The total revenue of the market
-  getTotalMarketRevenue() {},
+    if (findCustomer) {
+      findCustomer.cash += cash;
+      return true;
+    }
+
+    return false;
+  },
 };
+
+/*--------------------------2.4--------------------------------*/
+//   // Calculate the total value of all cars owned by a specific customer.
+//   // @param {string} customerId - The ID of the customer
+//   // @return {number} - The total value of cars owned by the customer
+//   getCustomerTotalCarValue(customerId) {},
+// };
+/*--------------------------3.1--------------------------------*/
+// const CarManager = {
+//   agencies,
+
+//   // Retrieve all cars available for purchase.
+//   // @return {object[]} - Array of cars
+//   getAllCars() {},
+/*--------------------------3.2--------------------------------*/
+//   // Search for cars based on certain criteria.
+//   // @param {number} year - The production year of the car
+//   // @param {number} price - The price of the car
+//   // @param {string} brand - The brand of the car
+//   // @return {object[]} - Array of cars that meet the criteria
+//   searchCars(year, price, brand) {},
+/*--------------------------3.3--------------------------------*/
+//   // Return the most expensive car available for sale.
+//   // @return {object} - The most expensive car
+//   getMostExpensiveCar() {},
+/*--------------------------3.4--------------------------------*/
+//   // Return the cheapest car available for sale.
+//   // @return {object} - The cheapest car
+//   getCheapestCar() {},
+// };
+/*--------------------------4.1--------------------------------*/
+// const CarPurchaseManager = {
+//   agencies,
+//   customers,
+//   taxesAuthority: {
+//     totalTaxesPaid: 0,
+//     sumOfAllTransactions: 0,
+//     numberOfTransactions: 0,
+//   },
+
+//   // Implement a sellCar function that sells a car to a specific customer.
+//   // @param {string} carId - The ID of the car
+//   // @param {string} customerId - The ID of the customer
+//   // @return {boolean} - true if the car was sold successfully, false otherwise
+//   sellCar(carId, customerId) {},
+/*--------------------------4.2--------------------------------*/
+//   // Calculate and return the total revenue of the entire market.
+//   // @return {number} - The total revenue of the market
+//   getTotalMarketRevenue() {},
+// };
 
 // Test CarAgencyManager
 
@@ -875,92 +886,108 @@ console.log(CarAgencyManager.getAllAgencies()); // Should return all agency name
 console.log("-----------------------1.3----------------------------");
 // // Test addCarToAgency
 // console.log('Testing addCarToAgency...');
+const car = {
+  brand: "Ferrari",
+  models: [
+    {
+      name: "Enzo",
+      year: 2023,
+      price: 3000000,
+      carNumber: "Enzo1",
+      ownerId: "Plyq5M5AZ",
+    },
+  ],
+};
 
 // console.log(CarAgencyManager.addCarToAgency("Plyq5M5AZ", carAdd));
 // console.log(CarAgencyManager.addCarToAgency("Plyq5M5AZ"));
-console.log(
-  CarAgencyManager.addCarToAgency("Plyq5M5AZ", {
-    brand: "Ferrari",
-    name: "Enzo",
-    year: 2023,
-    price: 3000000,
-    carNumber: "Enzo1",
-    ownerId: "Plyq5M5AZ",
-  })
-); // Should return true
+console.log(CarAgencyManager.addCarToAgency("Plyq5M5AZ", car)); // Should return true
 console.log(CarAgencyManager.searchAgency("Best Deal")); //פה אפשר לראות שהמערך של הפראררי הוסף
+
 console.log("-----------------------1.4----------------------------");
 // // Test removeCarFromAgency
 // console.log('Testing removeCarFromAgency...');
+
 console.log(CarAgencyManager.removeCarFromAgency("Plyq5M5AZ", "Enzo1")); // Should return true
+console.log(CarAgencyManager.searchAgency("Best Deal"));
 console.log("-----------------------1.5----------------------------");
 // // Test changeAgencyCashOrCredit
 // console.log('Testing changeAgencyCashOrCredit...');
-console.log(CarAgencyManager.changeAgencyCashOrCredit('Plyq5M5AZ', 1500000)); // Should return true
-console.log(CarAgencyManager.changeAgencyCashOrCredit('InvalidAgencyId', 1500000)); // Should return false
+console.log(CarAgencyManager.changeAgencyCashOrCredit("Plyq5M5AZ", 1500000)); // Should return true
+// const credit = 1543;
+// console.log(CarAgencyManager.changeAgencyCashOrCredit("Plyq5M5AZ", credit));
+// console.log(CarAgencyManager.changeAgencyCashOrCredit("InvalidAgencyId", 1500000) // Should return false
+console.log(CarAgencyManager.searchAgency("Best Deal"));
 console.log("-----------------------1.6----------------------------");
+
 // // Test updateCarPrice
 // console.log('Testing updateCarPrice...');
-console.log(CarAgencyManager.updateCarPrice('Plyq5M5AZ', 'AZJZ4', 150000)); // Should return true
-console.log(CarAgencyManager.updateCarPrice('InvalidAgencyId', 'AZJZ4', 150000)); // Should return false
+console.log(CarAgencyManager.updateCarPrice("Plyq5M5AZ", "AZJZ4", 150000)); // Should return true
+// console.log(CarAgencyManager.updateCarPrice("Plyq5M5AZ", "AZJZZ4", 150000)); // Should return false הוספתי טסט
+// CarAgencyManager.updateCarPrice("InvalidAgencyId", "AZJZ4", 150000); //null  שינתי פה את הטסט מפולס לנאל
+
 console.log("-----------------------1.7----------------------------");
 // // Test getTotalAgencyRevenue
-console.log('Testing getTotalAgencyRevenue...');
-console.log(CarAgencyManager.getTotalAgencyRevenue('Plyq5M5AZ')); // Should return the total revenue of agency with ID 'Plyq5M5AZ'
+// console.log("Testing getTotalAgencyRevenue...");
+console.log(CarAgencyManager.getTotalAgencyRevenue("oqQmsZoUo")); // Should return the total revenue of agency with ID 'oqQmsZoUo'
 console.log("-----------------------1.8----------------------------");
 // // Test transferCarBetweenAgencies
 // console.log('Testing transferCarBetweenAgencies...');
-console.log(CarAgencyManager.transferCarBetweenAgencies('Plyq5M5AZ', '26_IPfHU1', 'AZJZ4')); // Should return true
-console.log(CarAgencyManager.transferCarBetweenAgencies('InvalidAgencyId', '26_IPfHU1', 'AZJZ4')); // Should return false
+console.log(
+  CarAgencyManager.transferCarBetweenAgencies("Plyq5M5AZ", "26_IPfHU1", "AZJZ4")
+); // Should return true
+console.log(CarAgencyManager.searchAgency("26_IPfHU1"));
+// console.log(CarAgencyManager.transferCarBetweenAgencies('InvalidAgencyId', '26_IPfHU1', 'AZJZ4')); // Should return false
 
 // // Test CustomerManager
 console.log("-----------------------2.1----------------------------");
 // // Test searchCustomer
 // console.log('Testing searchCustomer...');
 console.log(CustomerManager.searchCustomer("BGzHhjnE8")); // Should return customer with ID 'BGzHhjnE8'
-console.log(CustomerManager.searchCustomer("Lilah Goulding")); // Should return customer with name 'Lilah Goulding'
-console.log(CustomerManager.searchCustomer("Invalid ID or Name")); // Should return null
+// console.log(CustomerManager.searchCustomer("Lilah Goulding")); // Should return customer with name 'Lilah Goulding'
+// console.log(CustomerManager.searchCustomer("Invalid ID or Name")); // Should return null
 console.log("-----------------------2.2----------------------------");
 // // Test getAllCustomers
 // console.log('Testing getAllCustomers...');
 console.log(CustomerManager.getAllCustomers()); // Should return all customer names
-
+console.log("-----------------------2.3----------------------------");
 // // Test changeCustomerCash
 // console.log('Testing changeCustomerCash...');
-// console.log(CustomerManager.changeCustomerCash("BGzHhjnE8", 50000)); // Should return true
-// console.log(CustomerManager.changeCustomerCash("Invalid ID", 50000)); // Should return false
+console.log(CustomerManager.changeCustomerCash("BGzHhjnE8", 50000)); // Should return true
 
+// console.log(CustomerManager.changeCustomerCash("Invalid ID", 50000)); // Should return false
+console.log("-----------------------2.4----------------------------");
 // // Test getCustomerTotalCarValue
 // console.log('Testing getCustomerTotalCarValue...');
 // console.log(CustomerManager.getCustomerTotalCarValue("2RprZ1dbL")); // Should return total car value of customer with ID '2RprZ1dbL'
-// console.log(CustomerManager.getCustomerTotalCarValue("Invalid ID")); // Should return 0
-
+// console.log(CustomerManager.getCustomerTotalCarValue("Invalid ID")); // Should return
+console.log("-----------------------3.1----------------------------");
 // // Test CarManager
 
 // // Test getAllCars
 // console.log('Testing getAllCars...');
 // console.log(CarManager.getAllCars()); // Should return all cars
-
+console.log("-----------------------3.2----------------------------");
 // // Test searchCars
 // console.log('Testing searchCars...');
 // console.log(CarManager.searchCars(2020, 200000, 'bmw')); // Should return all BMW cars from 2020 with price <= 200000
 // console.log(CarManager.searchCars(2020, 200000)); // Should return all cars from 2020 with price <= 200000
-
+console.log("-----------------------3.3----------------------------");
 // // Test getMostExpensiveCar
 // console.log('Testing getMostExpensiveCar...');
 // console.log(CarManager.getMostExpensiveCar()); // Should return the most expensive car
-
+console.log("-----------------------3.4----------------------------");
 // // Test getCheapestCar
 // console.log('Testing getCheapestCar...');
 // console.log(CarManager.getCheapestCar()); // Should return the cheapest car
-
+console.log("-----------------------4.1----------------------------");
 // // Test CarPurchaseManager
 
 // // Test sellCar
 // console.log('Testing sellCar...');
 // console.log(CarPurchaseManager.sellCar('AZJZ4', 'BGzHhjnE8')); // Should return true if car with ID 'AZJZ4' is sold to customer with ID 'BGzHhjnE8'
 // console.log(CarPurchaseManager.sellCar('InvalidCarId', 'BGzHhjnE8')); // Should return false
-
+console.log("-----------------------4.2----------------------------");
 // // Test getTotalMarketRevenue
 // console.log('Testing getTotalMarketRevenue...');
 // console.log(CarPurchaseManager.getTotalMarketRevenue()); // Should return the total market revenue
