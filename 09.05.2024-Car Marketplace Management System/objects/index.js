@@ -805,7 +805,7 @@ const CustomerManager = {
   changeCustomerCash(customerId, cash) {
     if (typeof customerId !== "string" || typeof cash !== "number") {
       console.log(
-        "false means agencyId is not a string or cashOrCredit is not a number"
+        "false means customerId is not a string or cash is not a number"
       );
       return false;
     }
@@ -819,14 +819,15 @@ const CustomerManager = {
 
     return false;
   },
+  /*--------------------------2.4--------------------------------*/
+  //   // Calculate the total value of all cars owned by a specific customer.
+  //   // @param {string} customerId - The ID of the customer
+  //   // @return {number} - The total value of cars owned by the customer
+  getCustomerTotalCarValue(customerId) {
+    const findCustomer = this.searchCustomer(customerId);
+  },
 };
 
-/*--------------------------2.4--------------------------------*/
-//   // Calculate the total value of all cars owned by a specific customer.
-//   // @param {string} customerId - The ID of the customer
-//   // @return {number} - The total value of cars owned by the customer
-//   getCustomerTotalCarValue(customerId) {},
-// };
 /*--------------------------3.1--------------------------------*/
 // const CarManager = {
 //   agencies,
@@ -954,7 +955,7 @@ console.log("-----------------------2.3----------------------------");
 // // Test changeCustomerCash
 // console.log('Testing changeCustomerCash...');
 console.log(CustomerManager.changeCustomerCash("BGzHhjnE8", 50000)); // Should return true
-
+console.log(CustomerManager.searchCustomer("BGzHhjnE8"));
 // console.log(CustomerManager.changeCustomerCash("Invalid ID", 50000)); // Should return false
 console.log("-----------------------2.4----------------------------");
 // // Test getCustomerTotalCarValue
